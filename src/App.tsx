@@ -7,7 +7,7 @@ function App() {
   return (
     <>
         <Navbar />
-        <PromptContainer className={""} />
+        <PromptContainer className={''} />
     </>
   )
 }
