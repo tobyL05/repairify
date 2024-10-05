@@ -23,8 +23,10 @@ export default function PromptContainer({ className }: props) {
 
     const [input, setInput] = useState<string>("")
     const [messages, setMessages] = useState<message[]>([introduction])
+    const [loading, setLoading] = useState<boolean>(false)
 
     async function sendInput(e: FormEvent<HTMLFormElement>) {
+        setLoading(true)
         e.preventDefault()
         setMessages((prevMessages) => [
             ...prevMessages,
@@ -45,6 +47,7 @@ export default function PromptContainer({ className }: props) {
             redirect: "follow"
         })
         const res: resp = await req.json();
+        setLoading(false)
         
         setMessages((prevMessages) => [
             ...prevMessages,

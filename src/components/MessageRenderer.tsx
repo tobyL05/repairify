@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import InputBubble from "./InputBubble"
 import OutputBubble from "./OutputBubble"
 import { message } from "../types"
@@ -9,6 +9,16 @@ interface props {
 
 
 export default function MessageRenderer({ msgs } : props) {
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    // Ensure that we scroll to the bottom every time messages update
+    useEffect(() => {
+        scrollToBottom();
+    }, [msgs]);
 
     function renderMessage(msgs: message[]) {
         return msgs.map((msg : message, idx) => {
@@ -25,8 +35,10 @@ export default function MessageRenderer({ msgs } : props) {
     }, [msgs])
 
     return (
-        <>
-            { chats } 
-        </>
+        <div style={{ overflowY: "auto" }}> {/* Adjust height as needed */}
+            {chats}
+            {/* Scroll target div */}
+            <div ref={messagesEndRef} className="hidden"/>
+        </div>
     )
 }
