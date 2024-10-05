@@ -1,14 +1,17 @@
-import { FormEvent, useRef, useState } from "react"
+import { FormEvent, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { introduction } from "../../content.ts"
 import FileUploadButton from "./FileUploadBtn.tsx";
 import MessageRenderer from "./MessageRenderer.tsx";
+import { message } from "../types.ts";
 
 interface props {
     className: string | undefined
 }
 
-
+interface resp {
+    message: string
+}
 
 // function to send request
 
@@ -18,13 +21,36 @@ interface props {
 
 export default function PromptContainer({ className }: props) {
 
-    const [input, setInput] = useState("")
-    const [messages, setMessages] = useState([introduction])
+    const [input, setInput] = useState<string>("")
+    const [messages, setMessages] = useState<message[]>([introduction])
 
-    function sendInput(e: FormEvent<HTMLFormElement>) {
+    async function sendInput(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
-        setMessages([...messages, input])
-    
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { type: "user", text: input }
+        ]);
+
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        
+        const raw = JSON.stringify({
+          "prompt": input
+        });
+        
+        const req = await fetch("https://x8gumtky6k.execute-api.us-west-2.amazonaws.com/generate", {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+        })
+        const res: resp = await req.json();
+        
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { type: "llm", text: res.message }
+        ]);
+
     }
 
     return (
