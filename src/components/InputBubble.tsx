@@ -4,7 +4,7 @@ interface props {
 
 export default function InputBubble({ userIn } : props) {
     return (
-        <div className="flex flex-row-reverse items-start my-2">
+        <div className="flex flex-row-reverse items-start my-4">
             <div className="flex flex-row-reverse items-start"> 
                 <img className="ml-2 h-8 w-8 rounded-full" src="https://dummyimage.com/128x128/354ea1/ffffff&text=G" />
             </div>
