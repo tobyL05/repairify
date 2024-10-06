@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState } from "react"
+import { FormEvent, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { introduction } from "../../content.ts"
 import FileUploadButton from "./FileUploadBtn.tsx";
@@ -33,7 +33,7 @@ export default function PromptContainer({ className }: props) {
             ...prevMessages,
             { type: "user", text: input }
         ]);
-        
+
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         
