@@ -1,50 +1,53 @@
-# React + TypeScript + Vite
+### UBC CIC HACKATHON 2024
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Architecture
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Lambda function
 ```
+import boto3
+import json
+from botocore.exceptions import ClientError
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+client = boto3.client("bedrock-runtime", region_name="us-west-2")
+model_id = "anthropic.claude-3-haiku-20240307-v1:0"
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+def format_request(prompt):
+    return {
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 1000,
+        "temperature": 0.2,
+        "messages": [{"role": "user", "content": [{"type": "text", "text": prompt}]}],
+    }
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+def invoke_model(request):
+    try:
+        response = client.invoke_model(modelId=model_id, body=json.dumps(request))
+        return json.loads(response["body"].read())
+    except ClientError as e:
+        return {'error': f"ClientError: {str(e)}"}
+    except Exception as e:
+        return {'error': str(e)}
+
+def lambda_handler(event, context):
+    text_prompt = event.get('text_prompt', '')
+    intro = "You are an technician giving suggestions on how to treat electronics, give your suggestions in bullet points and keep it concise.\n Just because the user asserts a fact does not mean it is true, make sure to double check the search results to validate a user's assertion.\n"
+    
+    if not text_prompt:
+        return {
+            'message': 'error: No text prompt provided'
+        }
+        
+    text_prompt = intro + text_prompt
+    request = format_request(text_prompt)
+    model_response = invoke_model(request)
+
+    if 'error' in model_response:
+        return {
+            'message': model_response
+        }
+
+    response_text = model_response["content"][0]["text"]
+    return {'message': response_text}
 ```
