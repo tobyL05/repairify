@@ -33,7 +33,7 @@ export default function PromptContainer({ className }: props) {
             ...prevMessages,
             { type: "user", text: input }
         ]);
-        setInput("")
+        
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         
