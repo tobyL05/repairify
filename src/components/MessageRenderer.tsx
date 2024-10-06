@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import InputBubble from "./InputBubble"
 import OutputBubble from "./OutputBubble"
 import { message } from "../types"
@@ -25,6 +25,7 @@ export default function MessageRenderer({ msgs } : props) {
             if (msg.type === "llm") {
                 return <OutputBubble key={idx} llmOut={msg.text}/>
             } else {
+                // console.log(msg.text)
                 return <InputBubble key={idx} userIn={msg.text}/>
             }
         })

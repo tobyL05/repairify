@@ -2,7 +2,6 @@ import { TypeAnimation } from "react-type-animation"
 import Markdown from "react-markdown"
 
 interface props {
-    llmOut: string
 }
 
 export default function OutputBubble({ llmOut } : props) {
