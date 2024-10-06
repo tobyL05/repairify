@@ -1,6 +1,7 @@
 ### UBC CIC HACKATHON 2024
 
 ## Architecture
+![image](https://github.com/user-attachments/assets/cbf9071f-02d7-468d-86ac-0f69611b9087)
 
 
 
